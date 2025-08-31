@@ -1,66 +1,76 @@
+import TodoForm from "@/components/TodoForm";
+import TodoList from "@/components/TodoList";
 import { Todo } from "@/types/todo";
-import { Button } from "@react-navigation/elements";
 import { useState } from "react";
-import { FlatList, Text, TextInput, View } from "react-native";
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import { StyleSheet, View } from "react-native";
+import "react-native-get-random-values";
+import Filter from "../components/Filter";
 
 export default function Index() {
-
-  const [newTopic, setNewTopic] = useState('');
-  const [newDueDate, setNewDueDate] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [sortKey, setSortKey] = useState<keyof Todo>("topic");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  function saveTodo() {
-    if(newTopic === '' || newDueDate === '') {
-      console.log("Topic or Due date is empty");
-      return;
-    }
-
-    const newTodo: Todo = {
-      id: uuidv4(),
-      topic: newTopic,
-      dueDate: newDueDate
-    };
+  function saveTodo(newTodo: Todo) {
     setTodos([...todos, newTodo]);
-    setNewTopic('');
-    setNewDueDate('');
   }
 
   function removeTodo(id: string) {
-    todos.splice(todos.findIndex((todo) => todo.id === id), 1);
-    setTodos([...todos]);
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos([...newTodos]);
   }
 
-  return (
-  <View>
-    <TextInput
-      placeholder="todo topic"
-      onChangeText={setNewTopic}
-      value={newTopic}
-    />
-    <TextInput
-      placeholder="due date"
-      onChangeText={setNewDueDate}
-      value={newDueDate}
-    />
-    <Button onPressIn={() => saveTodo()}>
-      Save Todo
-    </Button>
+  function handleSortChange(newSortKey: keyof Todo, newOrder: "asc" | "desc") {
+    setSortKey(newSortKey);
+    setSortOrder(newOrder);
+  }
 
-    <FlatList
-      data={todos}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View>
-          <Text>{item.topic}</Text>
-          <Text>{item.dueDate}</Text>
-          <Button onPressIn={() => removeTodo(item.id)}>
-            Remove
-          </Button>
-        </View>
-      )}
-    />
-  </View>
+  const sortedTodos = [...todos].sort((a, b) => {
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+    
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortOrder === "asc" 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+    
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  return (
+    <View style={styles.container}>
+      <TodoForm onPressAction={saveTodo} />
+      <View style={styles.filter}>
+      <Filter
+        onChange={handleSortChange}
+        sortKey="topic"
+        sortOrder={sortKey === "topic" ? sortOrder : "asc"}
+        label="Titre"
+      />
+      <Filter
+        onChange={handleSortChange}
+        sortKey="dueDate"
+        sortOrder={sortKey === "dueDate" ? sortOrder : "asc"}
+        label="Date"
+      />
+      </View>
+      <TodoList todos={sortedTodos} onPressAction={removeTodo} />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  filter:{
+    flexDirection: 'row',
+    justifyContent: "space-around",
+    marginVertical: 30
+  }
+});
