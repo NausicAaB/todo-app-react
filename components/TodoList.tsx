@@ -25,9 +25,7 @@ export default function TodoList({ todos, onPressAction }: deleteProps) {
       <Text style={styles.emptyTitle}>Aucune tâche pour le moment</Text>
       <Text style={styles.emptySubtitle}>Ajoutez votre première tâche ci-dessus !</Text>
       <View style={styles.decorativeElements}>
-        <Text style={styles.emoji}>🦋</Text>
-        <Text style={styles.emoji}>🌟</Text>
-        <Text style={styles.emoji}>🎀</Text>
+        <Text style={styles.emoji}>🦋  🌟  🎀</Text>
       </View>
     </View>
   );

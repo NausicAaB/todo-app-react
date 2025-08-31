@@ -6,17 +6,16 @@ export default function RootLayout() {
       screenOptions={{
         headerStyle: {
           backgroundColor: '#ab63db', 
-        },
-        headerTitleStyle: {
-          fontSize: 20,
-        },
+        }
       }}
     >
       <Stack.Screen 
         name="index" 
         options={{ 
           title: '✮࣪⋆˙ ToDo App  ˙࣪⋆✮',
-        }} 
+          headerTitleAlign: 'center',
+          statusBarStyle: 'dark',
+        }}
       />
     </Stack>
   );
