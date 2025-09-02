@@ -41,6 +41,7 @@ export default function TodoList({ todos, onPressAction }: deleteProps) {
           <View style={styles.todo}>
             <Text style={styles.todoText}>Topic: {item.topic}</Text>
             <Text style={styles.todoText}>Due date: {item.dueDate}</Text>
+            <Text style={styles.todoText}>Category: {item.category}</Text>
             </View>
             <TouchableOpacity
               style={styles.deleteButton}

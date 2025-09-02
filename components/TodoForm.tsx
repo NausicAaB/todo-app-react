@@ -1,4 +1,4 @@
-import { Todo } from "@/types/todo";
+import { Category, Todo } from "@/types/todo";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import {
@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import "react-native-get-random-values";
+import RNPickerSelect from "react-native-picker-select";
 import { v4 as uuidv4 } from "uuid";
 
 type submitProps = {
@@ -20,6 +21,13 @@ export default function TodoForm({ onPressAction }: submitProps) {
   const [newDueDate, setNewDueDate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [newCategory, setNewCategory] = useState<Category>("Travail");
+
+  const categories: Category[] = ["Travail", "Cegep", "Perso"];
+  const dropdownCategoriesData = categories.map((category) => ({
+    label: category,
+    value: category
+  }))
 
   function handleSubmit() {
     if (newTopic === "" || newDueDate === "") {
@@ -31,6 +39,7 @@ export default function TodoForm({ onPressAction }: submitProps) {
       id: uuidv4(),
       topic: newTopic,
       dueDate: newDueDate,
+      category: newCategory
     };
 
     onPressAction(newTodo);
@@ -53,6 +62,7 @@ export default function TodoForm({ onPressAction }: submitProps) {
     }
   }
 
+
   return (
     <View style={styles.form}>
       <TextInput
@@ -74,6 +84,11 @@ export default function TodoForm({ onPressAction }: submitProps) {
       {showDatePicker && (
         <DateTimePicker value={date} mode="date" onChange={handleDateChange} />
       )}
+
+      <RNPickerSelect onValueChange={value => {setNewCategory(value)}}
+        items={dropdownCategoriesData}
+        useNativeAndroidPickerStyle={true}/>
+
       <TouchableOpacity onPressIn={handleSubmit} style={styles.button}>
         <Text style={styles.buttonText}>Save Todo</Text>
       </TouchableOpacity>
