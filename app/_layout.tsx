@@ -2,6 +2,7 @@ import { AuthenticationContextProvider } from "@/contexts/AuthenticationContext"
 import { useAuth } from "@/hook/useAuth";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 function LayoutPrincipal() {
   const { isAuthenticated } = useAuth();
@@ -26,7 +27,13 @@ function LayoutPrincipal() {
     }
   }, [isAuthenticated, isPublicPage, router, segments]);
 
-
+  if (isAuthenticated === undefined) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <Stack
