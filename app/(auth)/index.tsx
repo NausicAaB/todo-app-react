@@ -1,18 +1,20 @@
+import Filter from "@/components/Filter";
 import TodoForm from "@/components/TodoForm";
 import TodoList from "@/components/TodoList";
+import { useAuth } from "@/hook/useAuth";
 import { CategoryFilter, Todo } from "@/types/todo";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import "react-native-get-random-values";
 import RNPickerSelect from "react-native-picker-select";
-import Filter from "../components/Filter";
 
 export default function Index() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortKey, setSortKey] = useState<keyof Todo>("topic");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('Tous');
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("Tous");
   const [sortTodos, setSortTodos] = useState<Todo[]>([]);
+  const { signout } = useAuth();
 
   const categoriesFilters: CategoryFilter[] = [
     "Tous",
@@ -27,25 +29,28 @@ export default function Index() {
     })
   );
 
-  useEffect(()=>{
-    const filter = todos.filter(todo => categoryFilter === "Tous" || todo.category === categoryFilter);
+  useEffect(() => {
+    const filter = todos.filter(
+      (todo) => categoryFilter === "Tous" || todo.category === categoryFilter
+    );
 
-        const sorted = [...filter].sort((a, b) => {
-          const aValue = a[sortKey];
-          const bValue = b[sortKey];
-          
-          if (typeof aValue === "string" && typeof bValue === "string") {
-            return sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-          }
-          
-          if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-          if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-          return 0;
-        });
-      
-        setSortTodos(sorted); 
-      }, [todos, categoryFilter, sortKey, sortOrder]);
+    const sorted = [...filter].sort((a, b) => {
+      const aValue = a[sortKey];
+      const bValue = b[sortKey];
 
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return sortOrder === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setSortTodos(sorted);
+  }, [todos, categoryFilter, sortKey, sortOrder]);
 
   function saveTodo(newTodo: Todo) {
     setTodos([...todos, newTodo]);
@@ -61,9 +66,13 @@ export default function Index() {
     setSortOrder(newOrder);
   }
 
-
   return (
     <View style={styles.container}>
+      
+      <TouchableOpacity style={styles.button} onPress={() => signout()}>
+        <Text style={styles.buttonText}>Déconnexion</Text>
+      </TouchableOpacity>
+
       <TodoForm onPressAction={saveTodo} />
       <View style={styles.filter}>
         <Filter
@@ -80,12 +89,12 @@ export default function Index() {
         />
       </View>
       <RNPickerSelect
-          onValueChange={(value) => {
-            setCategoryFilter(value)
-          }}
-          items={dropdownCategoriesFiltersData}
-          useNativeAndroidPickerStyle={true}
-        />
+        onValueChange={(value) => {
+          setCategoryFilter(value);
+        }}
+        items={dropdownCategoriesFiltersData}
+        useNativeAndroidPickerStyle={true}
+      />
       <TodoList todos={sortTodos} onPressAction={removeTodo} />
     </View>
   );
@@ -101,5 +110,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 30,
+  },
+  button: {
+    backgroundColor: "#ab63db",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  buttonText: {
+    color: "black",
+    textAlign: "center",
   },
 });

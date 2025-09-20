@@ -1,6 +1,5 @@
 import { Todo } from "@/types/todo";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import React from "react";
 import {
   FlatList,
   StyleSheet,
