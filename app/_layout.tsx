@@ -41,7 +41,7 @@ function LayoutPrincipal() {
         headerStyle: {
           backgroundColor: "#ab63db",
         },
-        headerTitle: "✮࣪⋆˙ ToDo App of " + user?.firstName +" ˙࣪⋆✮",
+        headerTitle: user ? `✮࣪⋆˙ ToDo App of ${user.firstName} ˙࣪⋆✮` : "✮࣪⋆˙ ToDo App ˙࣪⋆✮",
         headerTitleAlign: "center",
       }}
     ></Stack>

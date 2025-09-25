@@ -76,7 +76,6 @@ export default function Index() {
   }, [todos, categoryFilter, sortKey, sortOrder]);
 
   function saveTodo(newTodo: Todo) {
-    console.log("appel de add")
     add(newTodo);
   }
 

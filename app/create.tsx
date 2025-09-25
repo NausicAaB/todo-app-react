@@ -44,7 +44,7 @@ export default function Index() {
 
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Last name"
         onChangeText={setLastName}
         value={lastName}
       />

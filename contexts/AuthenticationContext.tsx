@@ -45,6 +45,7 @@ export function AuthenticationContextProvider({ children }: { children: React.Re
       const signout = async () => {
         try {
             await signOut(auth);
+            setUser(undefined);
             return { success: true };
           } catch (error: any) {
             return { success: false, message: "Erreur lors de la déconnexion." };

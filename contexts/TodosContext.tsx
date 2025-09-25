@@ -13,9 +13,7 @@ export function TodosContextProvider({ children }: { children: React.ReactNode }
     const {user} = useAuth();
 
     const add = async (newTodo: Todo) => {
-        console.log("aaaaadd")
         if (!user?.id) return { success: false, message: "Utilisateur non authentifié" };
-        console.log("add");
 
         try {
           await setDoc(doc(db, "todos", newTodo.id), {
@@ -38,7 +36,7 @@ export function TodosContextProvider({ children }: { children: React.ReactNode }
       };
     
       return (
-        <TodosContext.Provider value={{ add, remove, user?.id }}>
+        <TodosContext.Provider value={{ add, remove, userId: user?.id }}>
           {children}
         </TodosContext.Provider>
       );
