@@ -1,3 +1,5 @@
+import { User } from "./User";
+
 export interface AuthResult {
     success: boolean;
     message?: string;
@@ -5,6 +7,8 @@ export interface AuthResult {
 
 export interface AuthenticationContextType {
     isAuthenticated: boolean | undefined; 
-    signup: (username: string, password: string) => Promise<AuthResult>;
+    signup: (user: User, username: string, password: string) => Promise<AuthResult>;
     signout: () => Promise<AuthResult>;
+    login: (username: string, password:string) => Promise<AuthResult>;
+    user: User | undefined; 
 }

@@ -1,8 +1,11 @@
 import Filter from "@/components/Filter";
 import TodoForm from "@/components/TodoForm";
 import TodoList from "@/components/TodoList";
+import { db } from "@/firebaseConfig";
 import { useAuth } from "@/hook/useAuth";
+import { useTodos } from "@/hook/useTodos";
 import { CategoryFilter, Todo } from "@/types/todo";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import "react-native-get-random-values";
@@ -14,7 +17,8 @@ export default function Index() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("Tous");
   const [sortTodos, setSortTodos] = useState<Todo[]>([]);
-  const { signout } = useAuth();
+  const { signout, user } = useAuth();
+  const {add, remove} = useTodos();
 
   const categoriesFilters: CategoryFilter[] = [
     "Tous",
@@ -28,6 +32,25 @@ export default function Index() {
       value: categoryFilter,
     })
   );
+
+  useEffect(() => {
+    if (!user?.id) { 
+      setTodos([]);
+      return;
+    }
+  
+    const q = query(collection(db, "todos"), where("userId", "==", user.id));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const todosData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Todo, "id">),
+      }));
+      setTodos(todosData);
+    });
+  
+    return () => unsubscribe();
+  }, [user?.id]);
+  
 
   useEffect(() => {
     const filter = todos.filter(
@@ -53,12 +76,13 @@ export default function Index() {
   }, [todos, categoryFilter, sortKey, sortOrder]);
 
   function saveTodo(newTodo: Todo) {
-    setTodos([...todos, newTodo]);
+    console.log("appel de add")
+    add(newTodo);
   }
 
   function removeTodo(id: string) {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos([...newTodos]);
+    //const newTodos = todos.filter((todo) => todo.id !== id);
+    remove(id);
   }
 
   function handleSortChange(newSortKey: keyof Todo, newOrder: "asc" | "desc") {

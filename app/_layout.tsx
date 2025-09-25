@@ -1,31 +1,31 @@
 import { AuthenticationContextProvider } from "@/contexts/AuthenticationContext";
+import { TodosContextProvider } from "@/contexts/TodosContext";
 import { useAuth } from "@/hook/useAuth";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 
 function LayoutPrincipal() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
-  const publicPages = ["login", "create"];
+  const publicPages = ["home", "create, login"];
   const isPublicPage = publicPages.includes(segments[0]);
-
 
   useEffect(() => {
     if (isAuthenticated === undefined) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
-    if (isAuthenticated && !inAuthGroup ) {
+    if (isAuthenticated && !inAuthGroup) {
       router.replace("/(auth)");
     }
 
     if (!isAuthenticated && !isPublicPage) {
-      router.replace("/login");
+      router.replace("/home");
     }
-  }, [isAuthenticated, isPublicPage, router, segments]);
+  }, [isAuthenticated]);
 
   if (isAuthenticated === undefined) {
     return (
@@ -41,18 +41,19 @@ function LayoutPrincipal() {
         headerStyle: {
           backgroundColor: "#ab63db",
         },
-        headerTitle: "✮࣪⋆˙ ToDo App  ˙࣪⋆✮",
+        headerTitle: "✮࣪⋆˙ ToDo App of " + user?.firstName +" ˙࣪⋆✮",
         headerTitleAlign: "center",
       }}
-    >
-    </Stack>
+    ></Stack>
   );
 }
 
 export default function RootLayout() {
   return (
     <AuthenticationContextProvider>
-      <LayoutPrincipal />
+      <TodosContextProvider>
+        <LayoutPrincipal />
+      </TodosContextProvider>
     </AuthenticationContextProvider>
   );
 }

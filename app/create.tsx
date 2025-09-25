@@ -1,18 +1,31 @@
 import { useAuth } from "@/hook/useAuth";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { User } from "@/types/User";
+import { useState } from "react";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import "react-native-get-random-values";
 
 export default function Index() {
   const { signup } = useAuth();
-
-  function getRandomIntInclusive(min: number, max: number): number {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled + 1)) + minCeiled;
-  }
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   async function handleRegister() {
-    const result = await signup("test" + getRandomIntInclusive(1,200000) + "@test.com", "password123");
+    const user: User = {
+      id: undefined,
+      firstName: firstName,
+      lastName: lastName,
+    };
+
+    const result = await signup(user, email, password);
     if (!result.success) {
       Alert.alert("Erreur", result.message);
     }
@@ -21,6 +34,35 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text> Signup </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="First name"
+        onChangeText={setFirstName}
+        value={firstName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        onChangeText={setLastName}
+        value={lastName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        onChangeText={setEmail}
+        value={email}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        onChangeText={setPassword}
+        value={password}
+      />
+
       <TouchableOpacity style={styles.button} onPress={() => handleRegister()}>
         <Text style={styles.buttonText}> Register </Text>
       </TouchableOpacity>
@@ -43,5 +85,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "black",
     textAlign: "center",
+  },
+  input: {
+    borderColor: "#ddd",
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 10,
   },
 });
